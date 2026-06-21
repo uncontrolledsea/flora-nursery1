@@ -85,7 +85,7 @@ export default function AdminDashboard() {
     try {
       setUploading(true);
       const { data } = await API.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
-      const base = import.meta.env.VITE_API_URL?.replace('/api','') || 'http://localhost:5000';
+      const base = import.meta.env.VITE_API_URL?.replace('/api','') || 'https://flora-nursery1.onrender.com';
       const fullUrl = `${base}${data.imageUrl}`;
       setForm(p => ({ ...p, image: fullUrl }));
       setPreview(fullUrl);
