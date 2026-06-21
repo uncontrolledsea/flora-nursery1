@@ -52,7 +52,7 @@ npm install
 npm run dev
 ```
 
-Open: http://localhost:5173
+Open: https://flora-nursery1.onrender.com
 
 ---
 

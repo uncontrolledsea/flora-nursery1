@@ -5,8 +5,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': { target: 'http://localhost:5000', changeOrigin: true },
-      '/uploads': { target: 'http://localhost:5000', changeOrigin: true },
+      '/api': { target: 'https://flora-nursery1.onrender.com', changeOrigin: true },
+      '/uploads': { target: 'https://flora-nursery1.onrender.com', changeOrigin: true },
     }
   }
 })
