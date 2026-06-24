@@ -5,12 +5,31 @@ import { useAuth } from '../App';
 import toast from 'react-hot-toast';
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const [addresses, setAddresses] = useState([]);
   const [tab, setTab] = useState('profile');
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null);
   const [form, setForm] = useState({ name: '', phone: '', address: '', city: '', state: '', pincode: '', isDefault: false });
+  
+  const [gardeningForm, setGardeningForm] = useState({
+    gardeningExperience: user?.gardeningExperience || 'Beginner',
+    homeType: user?.homeType || 'Apartment',
+    sunlightAvailability: user?.sunlightAvailability || 'Medium',
+    petOwnership: user?.petOwnership || 'No Pets'
+  });
+  const [savingGardening, setSavingGardening] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setGardeningForm({
+        gardeningExperience: user.gardeningExperience || 'Beginner',
+        homeType: user.homeType || 'Apartment',
+        sunlightAvailability: user.sunlightAvailability || 'Medium',
+        petOwnership: user.petOwnership || 'No Pets'
+      });
+    }
+  }, [user]);
 
   useEffect(() => { if (tab === 'addresses') fetchAddresses(); }, [tab]);
   const fetchAddresses = async () => { try { const { data } = await API.get('/addresses'); setAddresses(data); } catch {} };
@@ -32,6 +51,20 @@ export default function Profile() {
     } catch { toast.error('Failed to save address'); }
   };
 
+  const saveGardeningProfile = async (e) => {
+    e.preventDefault();
+    try {
+      setSavingGardening(true);
+      const { data } = await API.put('/auth/profile', gardeningForm);
+      login({ ...data, token: user.token });
+      toast.success('Gardening profile updated!');
+    } catch (err) {
+      toast.error('Failed to update gardening profile');
+    } finally {
+      setSavingGardening(false);
+    }
+  };
+
   const deleteAddress = async (id) => {
     if (!window.confirm('Delete this address?')) return;
     try { await API.delete(`/addresses/${id}`); setAddresses(prev => prev.filter(a => a._id !== id)); toast.success('Deleted'); }
@@ -49,8 +82,60 @@ export default function Profile() {
 
       <div className="tabs">
         <button className={`tab ${tab === 'profile' ? 'active' : ''}`} onClick={() => setTab('profile')}>Profile</button>
+        <button className={`tab ${tab === 'gardening' ? 'active' : ''}`} onClick={() => setTab('gardening')}>Gardening Profile</button>
         <button className={`tab ${tab === 'addresses' ? 'active' : ''}`} onClick={() => setTab('addresses')}>My Addresses</button>
       </div>
+
+      {tab === 'gardening' && (
+        <form onSubmit={saveGardeningProfile} style={{ background: 'white', borderRadius: 'var(--radius)', padding: '2rem', boxShadow: 'var(--shadow)', marginBottom: '1.5rem' }}>
+          <h3 style={{ marginBottom: '1.2rem', color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Leaf size={18} /> Gardening Profile
+          </h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--gray)', marginBottom: '1.5rem' }}>
+            Configure your personal settings for plant recommendations, chatbot help, and personalized care scheduling.
+          </p>
+
+          <div className="form-group">
+            <label>Gardening Experience</label>
+            <select value={gardeningForm.gardeningExperience} onChange={e => setGardeningForm(p => ({ ...p, gardeningExperience: e.target.value }))}>
+              <option value="Beginner">Beginner (New to plant care, prefers easy plants)</option>
+              <option value="Intermediate">Intermediate (Has some experience, can handle average care)</option>
+              <option value="Expert">Expert (Highly skilled, can handle demanding/delicate plants)</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Home Type</label>
+            <select value={gardeningForm.homeType} onChange={e => setGardeningForm(p => ({ ...p, homeType: e.target.value }))}>
+              <option value="Apartment">Apartment (Limited indoor space or balcony)</option>
+              <option value="House">House (Spacious indoor area and outdoor yard)</option>
+              <option value="Office">Office (Desk-friendly, low water setups)</option>
+              <option value="Balcony">Balcony (Pots, window boxes, vertical space)</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Sunlight Availability</label>
+            <select value={gardeningForm.sunlightAvailability} onChange={e => setGardeningForm(p => ({ ...p, sunlightAvailability: e.target.value }))}>
+              <option value="Low">Low Light (Shaded window, minimal direct sun)</option>
+              <option value="Medium">Medium Light (Bright indirect sun, east/west window)</option>
+              <option value="High">High Light (Full direct sun, south window/outdoor garden)</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Pet Ownership</label>
+            <select value={gardeningForm.petOwnership} onChange={e => setGardeningForm(p => ({ ...p, petOwnership: e.target.value }))}>
+              <option value="No Pets">No Pets (Can choose any plants including toxic ones)</option>
+              <option value="Has Pets">Has Pets (Requires 100% pet-safe, non-toxic plants)</option>
+            </select>
+          </div>
+
+          <button type="submit" className="btn-primary" disabled={savingGardening} style={{ marginTop: '1rem', padding: '0.65rem 2rem' }}>
+            {savingGardening ? 'Saving...' : 'Save Gardening Profile'}
+          </button>
+        </form>
+      )}
 
       {tab === 'profile' && (
         <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: '2rem', boxShadow: 'var(--shadow)' }}>

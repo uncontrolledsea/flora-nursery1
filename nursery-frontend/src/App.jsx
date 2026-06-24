@@ -16,6 +16,9 @@ import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import Chatbot from './components/Chatbot/Chatbot';
 import API from './services/api';
+import PlantFinder from './pages/PlantFinder';
+import MyPlantCare from './pages/MyPlantCare';
+import SustainabilityDashboard from './pages/SustainabilityDashboard';
 
 export const AuthContext = createContext(null);
 export const CartContext = createContext(null);
@@ -91,6 +94,9 @@ function App() {
             <Route path="/wishlist" element={<PrivateRoute><Wishlist /></PrivateRoute>} />
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
             <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/plant-finder" element={<PlantFinder />} />
+            <Route path="/my-plant-care" element={<PrivateRoute><MyPlantCare /></PrivateRoute>} />
+            <Route path="/sustainability" element={<SustainabilityDashboard />} />
           </Routes>
           <Chatbot />
           <Toaster position="top-right" toastOptions={{ duration: 3000 }} />

@@ -29,6 +29,10 @@ const register = async (req, res) => {
 
     res.status(201).json({
       _id: user._id, name: user.name, email: user.email, role: user.role,
+      gardeningExperience: user.gardeningExperience,
+      homeType: user.homeType,
+      sunlightAvailability: user.sunlightAvailability,
+      petOwnership: user.petOwnership,
       token: generateToken(user._id)
     });
   } catch (err) {
@@ -46,6 +50,10 @@ const login = async (req, res) => {
 
     res.json({
       _id: user._id, name: user.name, email: user.email, role: user.role,
+      gardeningExperience: user.gardeningExperience,
+      homeType: user.homeType,
+      sunlightAvailability: user.sunlightAvailability,
+      petOwnership: user.petOwnership,
       token: generateToken(user._id)
     });
   } catch (err) {
@@ -63,4 +71,19 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getProfile };
+// Update profile
+const updateProfile = async (req, res) => {
+  try {
+    const { gardeningExperience, homeType, sunlightAvailability, petOwnership } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { gardeningExperience, homeType, sunlightAvailability, petOwnership },
+      { new: true }
+    ).select('-password');
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+module.exports = { register, login, getProfile, updateProfile };

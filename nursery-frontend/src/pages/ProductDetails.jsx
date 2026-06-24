@@ -4,6 +4,7 @@ import { ShoppingCart, Heart, Star, Sun, Droplets, Flower2, Leaf, PawPrint, Chev
 import API from '../services/api';
 import { useCart, useAuth } from '../App';
 import toast from 'react-hot-toast';
+import { getSustainabilityMetrics, getSustainabilityBadges } from '../utils/sustainabilityHelper';
 
 const StarPicker = ({ value, hover, onHover, onClick }) => (
   <div className="stars-input">
@@ -173,6 +174,11 @@ export default function ProductDetails() {
             <span style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#f0f4ff', padding: '0.3rem 0.8rem', borderRadius: 20, fontSize: '0.85rem' }}>
               <Leaf size={14} /> {product.difficulty} Care
             </span>
+            {getSustainabilityBadges(product, getSustainabilityMetrics(product)).map(b => (
+              <span key={b.label} style={{ display: 'flex', alignItems: 'center', gap: 5, background: b.bg, color: b.color, padding: '0.3rem 0.8rem', borderRadius: 20, fontSize: '0.85rem', fontWeight: 600 }}>
+                <Leaf size={14} /> {b.label}
+              </span>
+            ))}
           </div>
 
           {product.stock === 0 ? (
@@ -217,21 +223,61 @@ export default function ProductDetails() {
       </div>
 
       {activeTab === 'care' && (
-        <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: '2rem', boxShadow: 'var(--shadow)' }}>
-          <h3 style={{ marginBottom: '1.2rem', color: 'var(--green)' }}>Plant Care Guide</h3>
-          <div className="plant-care-grid">
-            {[
-              { icon: <Sun size={22} color="#f4a261" />, label: 'Sunlight', value: product.sunlight },
-              { icon: <Droplets size={22} color="#4ea8de" />, label: 'Watering', value: product.watering },
-              { icon: <Flower2 size={22} color="#8b5cf6" />, label: 'Soil', value: product.soil },
-              { icon: <Leaf size={22} color="#40916c" />, label: 'Difficulty', value: product.difficulty },
-            ].map(item => (
-              <div key={item.label} className="care-item">
-                <div className="icon">{item.icon}</div>
-                <div className="label">{item.label}</div>
-                <div className="value">{item.value}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.6rem' }}>
+          <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: '2rem', boxShadow: 'var(--shadow)' }}>
+            <h3 style={{ marginBottom: '1.2rem', color: 'var(--green)' }}>Plant Care Guide</h3>
+            <div className="plant-care-grid">
+              {[
+                { icon: <Sun size={22} color="#f4a261" />, label: 'Sunlight', value: product.sunlight },
+                { icon: <Droplets size={22} color="#4ea8de" />, label: 'Watering', value: product.watering },
+                { icon: <Flower2 size={22} color="#8b5cf6" />, label: 'Soil', value: product.soil },
+                { icon: <Leaf size={22} color="#40916c" />, label: 'Difficulty', value: product.difficulty },
+              ].map(item => (
+                <div key={item.label} className="care-item">
+                  <div className="icon">{item.icon}</div>
+                  <div className="label">{item.label}</div>
+                  <div className="value">{item.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ background: 'white', borderRadius: 'var(--radius)', padding: '2rem', boxShadow: 'var(--shadow)' }}>
+            <h3 style={{ marginBottom: '1.2rem', color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Leaf size={18} /> Ecological Sustainability Index
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.88rem' }}>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                  <span>Water Efficiency Index:</span>
+                  <strong>{getSustainabilityMetrics(product).waterEfficiency}%</strong>
+                </div>
+                <div style={{ width: '100%', height: 6, background: '#eee', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ width: `${getSustainabilityMetrics(product).waterEfficiency}%`, height: '100%', background: '#1d4ed8' }} />
+                </div>
               </div>
-            ))}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                  <span>Air Purification Rating:</span>
+                  <strong>{getSustainabilityMetrics(product).airPurification}%</strong>
+                </div>
+                <div style={{ width: '100%', height: 6, background: '#eee', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ width: `${getSustainabilityMetrics(product).airPurification}%`, height: '100%', background: '#10b981' }} />
+                </div>
+              </div>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                  <span>Sustainability Rating:</span>
+                  <strong>{getSustainabilityMetrics(product).sustainabilityScore}%</strong>
+                </div>
+                <div style={{ width: '100%', height: 6, background: '#eee', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ width: `${getSustainabilityMetrics(product).sustainabilityScore}%`, height: '100%', background: '#059669' }} />
+                </div>
+              </div>
+              <div style={{ background: 'var(--beige)', padding: '0.8rem', borderRadius: 8, fontSize: '0.82rem', marginTop: '0.4rem', borderLeft: '4px solid var(--green)', color: 'var(--dark)' }}>
+                <strong>Ecological Benefit:</strong> {getSustainabilityMetrics(product).ecologicalBenefit}
+              </div>
+            </div>
           </div>
         </div>
       )}

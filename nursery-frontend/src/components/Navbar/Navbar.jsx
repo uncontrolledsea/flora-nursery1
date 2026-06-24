@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, useCart } from '../../App';
-import { Leaf, ShoppingCart, Package, Heart, User, Settings, LogOut, Search, Menu, X } from 'lucide-react';
+import { Leaf, ShoppingCart, Package, Heart, User, Settings, LogOut, Search, Menu, X, Calendar, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Navbar() {
@@ -35,11 +35,14 @@ export default function Navbar() {
 
       <div className={`navbar-links ${menuOpen ? 'open' : ''}`}>
         <Link to="/" onClick={() => setMenuOpen(false)}><Leaf size={15} /> Home</Link>
+        <Link to="/plant-finder" onClick={() => setMenuOpen(false)}><Sparkles size={15} /> Plant Finder</Link>
+        <Link to="/sustainability" onClick={() => setMenuOpen(false)}><Leaf size={15} /> Eco Dashboard</Link>
         <Link to="/cart" onClick={() => setMenuOpen(false)}>
           <ShoppingCart size={15} /> Cart {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
         </Link>
         {user ? (
           <>
+            <Link to="/my-plant-care" onClick={() => setMenuOpen(false)}><Calendar size={15} /> My Plant Care</Link>
             <Link to="/orders" onClick={() => setMenuOpen(false)}><Package size={15} /> Orders</Link>
             <Link to="/wishlist" onClick={() => setMenuOpen(false)}><Heart size={15} /> Wishlist</Link>
             <Link to="/profile" onClick={() => setMenuOpen(false)}><User size={15} /> {user.name.split(' ')[0]}</Link>
